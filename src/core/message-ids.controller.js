@@ -15,7 +15,8 @@ const {
 } = require('../config/init.config');
 
 const {
-  publishMessageIds
+  publishMessageIds,
+  ackUserMsg
 } = require('../libs/rabbit.utils');
 
 const {
@@ -61,13 +62,13 @@ getMessageIds = function (userMsg) {
         removeMessageIdsNotOnGoogleServer(userId, messageIdsFromServer, messageIdsFromMongo);
       }
 
-      rabbit.ack('threads.listen.1', userMsg);
+      ackUserMsg(userMsg);
     }).catch((err) => {
-      logger.error('Error in getPages(): ' + err);
+      logger.error('Error in getMessageIdPages(): ' + err);
       // not sure about this
       let lastMsg = true;
-      publishThreadIds(userId, access_token, [], 0, lastMsg);
-      rabbit.ack('threads.listen.1', userMsg);
+      publishMessageIds(userId, access_token, [], 0, lastMsg);
+      ackUserMsg(userMsg);
     });
 
   });
@@ -101,17 +102,18 @@ async function getMessageIdPages(userObj, messageIdsFromMongo, nextPageToken, pa
     return uniqueMessageId(message.id, messageIdsFromMongo);
   });
   
-  results.newMessageIdCount = results.newMessageIdCount + uniqueMessages.length;
+  results.newMessageIdCount = results.newMessageIdCount + newMessages.length;
 
   logger.trace(userId + ' - Page Number: ' + pageNumber);
-  logger.trace(userId + ' - Number of new Message Ids: ' + uniqueMessages.length);
+  logger.trace(userId + ' - Number of message Ids received from google server: ' + messages.length);
+  logger.trace(userId + ' - Number of new Message Ids: ' + newMessages.length);
     
   if (nextPageToken) {
     let lastMsg = false;
     publishMessageIds(userId, access_token, newMessages, pageNumber, lastMsg);
     uploadMessageIds(userId, newMessages);
     pageNumber++;
-    return getPages(userObj, messageIdsFromMongo, nextPageToken, pageNumber, results);
+    return getMessageIdPages(userObj, messageIdsFromMongo, nextPageToken, pageNumber, results);
   } else {
     let lastMsg = true;
     publishMessageIds(userId, access_token, newMessages, pageNumber, lastMsg);

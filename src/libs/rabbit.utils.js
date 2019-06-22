@@ -5,12 +5,17 @@ const {
 } = require('../config/rabbit.config');
 
 function createQueue(userId, callback) {
-  rabbit.assertQueue(rabbit_topology.channels.send[0], 'batch-messages.message-ids.q.' + userId, { autoDelete: false, durable: true }, (assertQueueErr, q) => {
+  let messageIdsQueue = rabbit_topology.queues.user_prefix + userId;
+  let messageIdsExchange = rabbit_topology.exchanges.topic.messageIds;
+  let sendChannel = rabbit_topology.channels.send;
+  let key = 'user.' + userId;
+
+  rabbit.assertQueue(sendChannel, messageIdsQueue, { autoDelete: false, durable: true }, (assertQueueErr, q) => {
     if (assertQueueErr) {
       logger.error(assertQueueErr);
       callback(assertQueueErr, undefined)
     } else {
-      rabbit.bindQueue(rabbit_topology.channels.send[0], 'batch-messages.message-ids.q.' + userId, rabbit_topology.exchanges.topic[0], 'user.' + userId, {}, (bindQueueErr, ok) => {
+      rabbit.bindQueue(sendChannel, messageIdsQueue, messageIdsExchange, key, {}, (bindQueueErr, ok) => {
         if (bindQueueErr) {
           logger.error(binsQueueErr);
           callback(bindQueueErr, undefined);
@@ -32,7 +37,9 @@ function publishToRabbitMQ(userId, access_token, messageIds, pageNumber, lastMsg
     lastMsg: lastMsg
   }
   let sentAt = new Date().getTime();
-  rabbit.publish(rabbit_topology.channels.send[0], rabbit_topology.exchanges.topic[0], 'user.' + this.userId, message, {
+  let sendChannel = rabbit_topology.channels.send;
+  let messageIdsExchange = rabbit_topology.exchanges.topic.messageIds;
+  rabbit.publish(sendChannel, messageIdsExchange, 'user.' + userId, message, {
     contentType: 'application/json', 
     type: 'thread ids',
     appId: 'zi-threads',
@@ -45,8 +52,13 @@ function publishToRabbitMQ(userId, access_token, messageIds, pageNumber, lastMsg
 
 exports.publishMessageIds = function publishThreadIds(userId, access_token, messages, pageNumber, lastMsg) {
   let messageIds = messages.map(message => message.id);
-  createQueue((err, ok) => {
+  createQueue(userId, (err, ok) => {
     if (err) return logger.error(err);
     publishToRabbitMQ(userId, access_token, messageIds, pageNumber, lastMsg);
   });
 };
+
+exports.ackUserMsg = function ackUserMsg(userMsg) {
+  let listenChannel = rabbit_topology.channels.listen;
+  rabbit.ack(listenChannel, userMsg);
+}

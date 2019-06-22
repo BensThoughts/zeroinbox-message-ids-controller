@@ -7,9 +7,9 @@
         {
             "type": "node",
             "request": "attach",
-            "name": "Threads",
+            "name": "Message-Ids",
             "address": "127.0.0.1",
-            "port":9231
+            "port":9234
         }
     ]
 }

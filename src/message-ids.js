@@ -29,9 +29,12 @@ mongoose.connect(mongo_uri, { useNewUrlParser: true }, (err, db) => {
 
     rabbit.connect(rabbit_config, (err, ch) => {
       logger.info('Connected to RabbitMQ!');
-      rabbit.consume(rabbit_topology.channels.listen[0], rabbit_topology.queues[0], (userMsg) => {
+      let listenChannel = rabbit_topology.channels.listen;
+      let userIdsQueue = rabbit_topology.queues.user_id;
+      rabbit.consume(listenChannel, userIdsQueue, (userMsg) => {
         let message = JSON.stringify(userMsg.content);
-        logger.trace('userMsg.content received: ' + message);
+        let userId = userMsg.content.userId;
+        logger.trace(userId + ' - userMsg.content received: ' + message);
         getMessageIds(userMsg);
       }, { noAck: false });
 

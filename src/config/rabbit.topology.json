@@ -2,13 +2,13 @@
     "exchanges" : [
         {
             "channel": "message-ids.listen.1",
-            "name": "api.get-senders.user-ids.fanout.ex.1",
+            "name": "api.get-messages.user-ids.fanout.ex.1",
             "type": "fanout",
             "options": {}
         },
         {
             "channel": "message-ids.send.1",
-            "name": "message-ids.get-senders.message-ids.topic.ex.1",
+            "name": "message-ids.get-messages.message-ids.topic.ex.1",
             "type": "topic",
             "options": { "durable": true }
         }
@@ -16,15 +16,15 @@
     "queues": [
         {
             "channel": "message-ids.listen.1",
-            "name": "message-ids.get-senders.user-ids.q.1",
+            "name": "message-ids.get-messages.user-ids.q.1",
             "options": { "autoDelete": false }
         }
     ],
     "bindings": [
         {
             "channel": "message-ids.listen.1",
-            "queue": "message-ids.get-senders.user-ids.q.1",
-            "exchange": "api.get-senders.user-ids.fanout.ex.1",
+            "queue": "message-ids.get-messages.user-ids.q.1",
+            "exchange": "api.get-messages.user-ids.fanout.ex.1",
             "key": "",
             "options": {}
         }
