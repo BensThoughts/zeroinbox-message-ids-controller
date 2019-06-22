@@ -5,7 +5,7 @@ const LoadingStatus = require('../models/loading-status.model');
 
 exports.findAllMessageIds = function(userId, callback) {
   let conditions = { userId, userId };
-  MessageId.find().distinct('id', conditions, (err, messageIds) => {
+  MessageId.find().distinct('messageId', conditions, (err, messageIds) => {
     callback(err, messageIds);
   });
 }
