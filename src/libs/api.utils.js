@@ -37,12 +37,13 @@ function httpGetPageOfMessageIdsPromise(access_token, pageToken) {
 
       if (!error && response.statusCode == 200) {
         body = JSON.parse(body);
-        logger.debug('Next page token: ' + body.nextPageToken);
         resolve(body)
       } else {
-        logger.error('Error in getPageOfMessageIdsPromise() at request.get(): ' + error);
-        logger.error('Error body: ' + JSON.stringify(body));
-        reject(error);
+        let httpError = {
+          urlError: 'GET - Error contacting ' + url + ': ' + error,
+          errorBody: JSON.stringify(error)
+        }
+        reject(httpError);
       }
 
     });

@@ -64,7 +64,7 @@ getMessageIds = function (userMsg) {
 
       ackUserMsg(userMsg);
     }).catch((err) => {
-      logger.error('Error in getMessageIdPages(): ' + err);
+      logger.error(userId + ' - Error in getMessageIdPages(): ' + JSON.stringify(err));
       // not sure about this
       let lastMsg = true;
       publishMessageIds(userId, access_token, [], 0, lastMsg);
@@ -79,9 +79,9 @@ async function getMessageIdPages(userObj, messageIdsFromMongo, nextPageToken, pa
   let access_token = userObj.access_token;
   let userId = userObj.userId;
 
-  let response = await getPageOfMessageIds(access_token, nextPageToken).catch((err) => {
+  let response = await getPageOfMessageIds(access_token, nextPageToken).catch((httpErr) => {
     // logger.error(err);
-    throw new Error(err);
+    throw new Error(httpErr);
   });
 
   if (response === undefined) {
@@ -139,14 +139,12 @@ function removeMessageIdsNotOnGoogleServer(userId, messageIdsFromServer, message
 
   logger.trace(userId + ' - Number of messageIds to remove from mongo: ' + messageIdsToRemove.length);
   
-  deleteMessageIds(userId, messageIdsToRemove, (err, res) => {
-    if (err) return logger.error(err);
+  deleteMessageIds(userId, messageIdsToRemove, (mongoErr, res) => {
+    if (mongoErr) return logger.error(userId + ' - ' + mongoErr);
   });
 
-  findSendersWithMessageIdsToRemove(userId, messageIdsToRemove, (err, senders) => {
-    if (err) {
-      return logger.error(err);
-    }
+  findSendersWithMessageIdsToRemove(userId, messageIdsToRemove, (mongoErr, senders) => {
+    if (mongoErr) return logger.error(userId + ' - ' + mongoErr);
     logger.trace(userId + ' - Number of senders with message Ids to remove: ' + senders.length);
     senders.forEach((sender) => {
       let senderId = sender.senderId;
@@ -157,15 +155,15 @@ function removeMessageIdsNotOnGoogleServer(userId, messageIdsFromServer, message
 
       if (removeSender.length == 0) {
         logger.trace(userId + ' - All messageIds in sender are messageIdsToRemove, deleting senderId: ' + senderId)
-        deleteSender(userId, senderId, (err, deletionResponse) => {
-          if (err) return logger.error(err);
+        deleteSender(userId, senderId, (mongoErr, deletionResponse) => {
+          if (mongoErr) return logger.error(userId + ' - ' + mongoErr);
           logger.trace(userId + ' - ' + 'senderId: ' + senderId + ' - Sender deleted because of external removal: ' + deletionResponse);
         });
       } else {
         logger.trace(userId + ' - Removing messageIds no longer on Google server from senderId: ' + senderId);
-        removeMessageIdsFromSender(userId, senderId, messageIdsToRemove, (err, updateResponse) => {
-          if (err) return logger.error(err);
-          logger.trace(userId + ' - ' + 'senderId: ' + senderId + ' - messageIds removed from sender: ' + updateResponse);
+        removeMessageIdsFromSender(userId, senderId, messageIdsToRemove, (mongoErr, updateResponse) => {
+          if (mongoErr) return logger.error(userId + ' - ' + mongoErr);
+          logger.trace(userId + ' - ' + 'senderId: ' + senderId + ' - messageIds removed from sender: ' + messageIdsToRemove.length);
         })
       }
     });
