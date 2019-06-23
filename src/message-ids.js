@@ -8,9 +8,9 @@ const {
 
 const mongoose = require('mongoose');
 const { 
-  mongo_uri,
-  message_ids_health_host,
-  message_ids_health_port
+  MONGO_URI,
+  MESSAGE_IDS_HEALTH_HOST,
+  MESSAGE_IDS_HEALTH_PORT
 } = require('./config/init.config');
 
 const express = require('express');
@@ -21,7 +21,7 @@ KubeHealthCheck.get('/healthz', (req, res, next) => {
 
 const getMessageIds = require('./core/message-ids.controller');
 
-mongoose.connect(mongo_uri, { useNewUrlParser: true }, (err, db) => {
+mongoose.connect(MONGO_URI, { useNewUrlParser: true }, (err, db) => {
   if (err) {
     logger.error('Error in index.js at mongoose.connect(): ' + err);
   } else {
@@ -38,9 +38,9 @@ mongoose.connect(mongo_uri, { useNewUrlParser: true }, (err, db) => {
         getMessageIds(userMsg);
       }, { noAck: false });
 
-      let server = KubeHealthCheck.listen(message_ids_health_port, message_ids_health_host);
+      let server = KubeHealthCheck.listen(MESSAGE_IDS_HEALTH_PORT, MESSAGE_IDS_HEALTH_HOST);
       processHandler(server);
-      logger.info(`Running health check on http://${message_ids_health_host}:${message_ids_health_port}`);
+      logger.info(`Running health check on http://${MESSAGE_IDS_HEALTH_HOST}:${MESSAGE_IDS_HEALTH_PORT}`);
     });
 
   };
