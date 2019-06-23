@@ -105,17 +105,3 @@ exports.uploadLoadingStatus = function uploadLoadingStatus(userId, messageIdTota
     callback(err, raw);
   });
 }
-
-
-/* exports.findMessageIdsToRemove = function(userId, messageIdsToRemove, callback) {
-    let conditions = {
-        userId: userId,
-        messageId: {
-            "$in": messageIds
-        }
-    }
-
-    MessageId.find(conditions, (err, raw) => {
-        callback(err, raw);
-    });
-} */
