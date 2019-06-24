@@ -13,6 +13,12 @@ const {
   MESSAGE_IDS_HEALTH_PORT
 } = require('./config/init.config');
 
+// Print out the value of all env vars
+let envVars = require('./config/init.config');
+Object.keys(envVars).forEach((envVar) => {
+  logger.info(envVar + ': ' + envVars[envVar]);
+});
+
 const express = require('express');
 const KubeHealthCheck = express();
 KubeHealthCheck.get('/healthz', (req, res, next) => {
