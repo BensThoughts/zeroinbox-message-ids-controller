@@ -1,6 +1,6 @@
 {
   "name": "zeroinbox-message-ids",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Backend for zero inbox. Obtain Message Ids",
   "main": "/src/message-ids.js",
   "directories": {
