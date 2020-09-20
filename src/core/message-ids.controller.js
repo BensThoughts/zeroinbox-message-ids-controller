@@ -85,7 +85,7 @@ async function getMessageIdPages(userObj, messageIdsFromMongo, nextPageToken, pa
   });
 
   if (response === undefined) {
-    throw new Error('response === undefined from getPageOfThreads');
+    throw new Error('response === undefined from getPageOfMessageIds');
   }
 
   // response = {
