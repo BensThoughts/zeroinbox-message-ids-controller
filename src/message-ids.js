@@ -27,7 +27,7 @@ KubeHealthCheck.get('/healthz', (req, res, next) => {
 
 const getMessageIds = require('./core/message-ids.controller');
 
-mongoose.connect(MONGO_URI, { useNewUrlParser: true }, (err, db) => {
+mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true }, (err, db) => {
   if (err) {
     logger.error('Error in index.js at mongoose.connect(): ' + err);
   } else {
