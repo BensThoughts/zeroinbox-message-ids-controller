@@ -10,9 +10,9 @@
     "test": "./node_modules/mocha/bin/_mocha ./src/**/*.spec.js --exit",
     "unit": "./node_modules/mocha/bin/_mocha ./src/**/unit/*.spec.js --timeout 10000 --exit",
     "integration": "./node_modules/mocha/bin/_mocha ./src/**/integration/*.spec.js --exit",
-    "start:nodemon": "nodemon /usr/src/app/src/message-ids.js",
-    "start:dev": "cd ./src && nodemon --inspect-brk=0.0.0.0 message-ids.js",
-    "dev": "cd ./src && node message-ids.js"
+    "start:nodemon": "nodemon /usr/src/app/src/index.js",
+    "start:dev": "cd ./src && nodemon --inspect-brk=0.0.0.0 index.js",
+    "dev": "cd ./src && node index.js"
   },
   "author": "",
   "license": "ISC",
