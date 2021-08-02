@@ -43,10 +43,6 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true },
         logger.trace(userId + ' - userMsg.content received: ' + message);
         getMessageIds(userMsg);
       }, { noAck: false });
-
-      let server = KubeHealthCheck.listen(MESSAGE_IDS_HEALTH_PORT, MESSAGE_IDS_HEALTH_HOST);
-      processHandler(server);
-      logger.info(`Running health check on http://${MESSAGE_IDS_HEALTH_HOST}:${MESSAGE_IDS_HEALTH_PORT}`);
     });
 
   };
@@ -56,6 +52,10 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true },
 const signals= {
   'SIGTERM': 15
 }
+
+let server = KubeHealthCheck.listen(MESSAGE_IDS_HEALTH_PORT, MESSAGE_IDS_HEALTH_HOST);
+processHandler(server);
+logger.info(`Running health check on http://${MESSAGE_IDS_HEALTH_HOST}:${MESSAGE_IDS_HEALTH_PORT}`);
 
 function processHandler(server) {
   Object.keys(signals).forEach((signal) => {
