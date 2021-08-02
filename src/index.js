@@ -35,6 +35,13 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true },
 
     rabbit.connect(rabbit_config, (err, ch) => {
       logger.info('Connected to RabbitMQ!');
+
+      // If getting EADDR Already in use, probably rabbit.connect has
+      // tried to reconnect/reload
+      let server = KubeHealthCheck.listen(MESSAGE_IDS_HEALTH_PORT, MESSAGE_IDS_HEALTH_HOST);
+      processHandler(server);
+      logger.info(`Running health check on http://${MESSAGE_IDS_HEALTH_HOST}:${MESSAGE_IDS_HEALTH_PORT}`);
+
       let listenChannel = rabbit_topology.channels.listen;
       let userIdsQueue = rabbit_topology.queues.user_id;
       rabbit.consume(listenChannel, userIdsQueue, (userMsg) => {
@@ -49,15 +56,16 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true },
 });
 
 // Graceful shutdown SIG handling
-const signals= {
-  'SIGTERM': 15
-}
-
-let server = KubeHealthCheck.listen(MESSAGE_IDS_HEALTH_PORT, MESSAGE_IDS_HEALTH_HOST);
-processHandler(server);
-logger.info(`Running health check on http://${MESSAGE_IDS_HEALTH_HOST}:${MESSAGE_IDS_HEALTH_PORT}`);
-
 function processHandler(server) {
+  const signals = {
+    'SIGHUP': 1,
+    'SIGINT': 2,
+    'SIGQUIT': 3,
+    'SIGABRT': 6,
+    // 'SIGKILL': 9, // doesn't work
+    'SIGTERM': 15,
+  };
+
   Object.keys(signals).forEach((signal) => {
     process.on(signal, () => {
       logger.info(`Process received a ${signal} signal`);
@@ -67,16 +75,18 @@ function processHandler(server) {
 }
 
 const shutdown = (server, signal, value) => {
-  logger.info('shutdown!');
-    logger.info(`Server stopped by ${signal} with value ${value}`);
-    rabbit.disconnect(() => {
-      logger.info('Rabbit disconnected!');
-      mongoose.disconnect((error) => {
+  logger.info(`Server stopped by ${signal} with value ${value}`);
+  rabbit.disconnect(() => {
+    logger.info('Rabbit disconnected!');
 
-      });
-      server.close(() => {
-
-      })
-      logger.info('Mongo disconnected!')
+    mongoose.disconnect((error) => {
+      if (error) {
+        logger.error('Mongo disconnect error: ' + error);
+      }
+      logger.info('Mongo disconnected gracefully!')
     });
+    server.close(() => {
+
+    })
+  });
 };
