@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const workdir = path.resolve(__dirname) + '/'
+const workdir = path.resolve(__dirname) + '/';
 const rabbitTop = fs.readFileSync(workdir + 'rabbit.topology.json');
 const rabbitTopology = JSON.parse(rabbitTop.toString());
 const logger = require('../loggers/log4js');
@@ -18,47 +18,47 @@ const RABBIT_PROTOCOL = process.env.RABBIT_PROTOCOL;
 
 const RABBIT_URL = process.env.RABBIT_URL;
 
-let rabbit_config;
+let rabbitConfig;
 
 if (RABBIT_URL) {
   logger.info('RABBIT_URL: ' + RABBIT_URL);
-  rabbit_config = {
-      url: RABBIT_URL,
-      ...rabbitTopology
-  }
+  rabbitConfig = {
+    url: RABBIT_URL,
+    ...rabbitTopology,
+  };
 } else if (RABBIT_HOSTNAME) {
-  rabbit_config = {
+  rabbitConfig = {
     connection: {
-        hostname: RABBIT_HOSTNAME,
-        port: RABBIT_PORT,
-        username: RABBIT_USERNAME,
-        password: RABBIT_PASSWORD,
-        protocol: RABBIT_PROTOCOL,
-        frameMax: RABBIT_FRAME_MAX,
-        vhost: RABBIT_VHOST,
-        heartbeat: RABBIT_HEARTBEAT,
+      hostname: RABBIT_HOSTNAME,
+      port: RABBIT_PORT,
+      username: RABBIT_USERNAME,
+      password: RABBIT_PASSWORD,
+      protocol: RABBIT_PROTOCOL,
+      frameMax: RABBIT_FRAME_MAX,
+      vhost: RABBIT_VHOST,
+      heartbeat: RABBIT_HEARTBEAT,
     },
-    ...rabbitTopology
-  }
+    ...rabbitTopology,
+  };
 }
 
-const rabbit_topology = {
+const userTopology = {
   channels: {
     listen: 'message-ids.listen.channel.1',
     send: 'message-ids.send.channel.1',
   },
   exchanges: {
     topic: {
-      messageIds: 'message-ids.get-messages.message-ids.topic.ex.1'
-    }
+      messageIds: 'message-ids.get-messages.message-ids.topic.ex.1',
+    },
   },
   queues: {
     user_id: 'message-ids.get-messages.user-ids.q.1',
-    user_prefix: 'batch-messages.get-messages.q.'
-  }
-}
+    user_prefix: 'batch-messages.get-messages.q.',
+  },
+};
 
 module.exports = {
-    rabbit_config,
-    rabbit_topology,
-}
+  rabbitConfig,
+  userTopology,
+};

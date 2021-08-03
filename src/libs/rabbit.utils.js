@@ -1,57 +1,84 @@
 const rabbit = require('zero-rabbit');
 const logger = require('../loggers/log4js');
 const {
-  rabbit_topology
+  userTopology,
 } = require('../config/rabbit.config');
 
+/**
+ * @param  {string} userId
+ * @param  {Function} callback
+ */
 function createQueue(userId, callback) {
-  let messageIdsQueue = rabbit_topology.queues.user_prefix + userId;
-  let messageIdsExchange = rabbit_topology.exchanges.topic.messageIds;
-  let sendChannel = rabbit_topology.channels.send;
-  let key = 'user.' + userId;
+  const messageIdsQueue = userTopology.queues.user_prefix + userId;
+  const messageIdsExchange = userTopology.exchanges.topic.messageIds;
+  const sendChannel = userTopology.channels.send;
+  const key = 'user.' + userId;
 
-  rabbit.assertQueue(sendChannel, messageIdsQueue, { autoDelete: false, durable: true }, (assertQueueErr, q) => {
-    if (assertQueueErr) {
-      logger.error(assertQueueErr);
-      callback(assertQueueErr, undefined)
-    } else {
-      rabbit.bindQueue(sendChannel, messageIdsQueue, messageIdsExchange, key, {}, (bindQueueErr, ok) => {
-        if (bindQueueErr) {
-          logger.error(binsQueueErr);
-          callback(bindQueueErr, undefined);
+  rabbit.assertQueue(
+      sendChannel,
+      messageIdsQueue,
+      {autoDelete: false, durable: true},
+      (assertQueueErr, q) => {
+        if (assertQueueErr) {
+          logger.error(JSON.stringify(assertQueueErr));
+          callback(assertQueueErr, undefined);
         } else {
-          callback(undefined, ok);
+          rabbit.bindQueue(
+              sendChannel,
+              messageIdsQueue,
+              messageIdsExchange,
+              key,
+              {},
+              (bindQueueErr, ok) => {
+                if (bindQueueErr) {
+                  logger.error(binsQueueErr);
+                  callback(bindQueueErr, undefined);
+                } else {
+                  callback(undefined, ok);
+                }
+              });
         }
-      });
-    }
-  });
+      },
+  );
 }
 
-
-function publishToRabbitMQ(userId, accessToken, messageIds, pageNumber, lastMsg) {
-  let message = {
+/**
+ * @param  {string} userId
+ * @param  {string} accessToken
+ * @param  {Array<string>} messageIds
+ * @param  {number} pageNumber
+ * @param  {boolean} lastMsg
+ */
+function publishToRabbitMQ(
+    userId,
+    accessToken,
+    messageIds,
+    pageNumber,
+    lastMsg,
+) {
+  const message = {
     userId: userId,
     accessToken: accessToken,
     messageIds: messageIds,
     pageNumber: pageNumber,
-    lastMsg: lastMsg
-  }
-  let sentAt = new Date().getTime();
-  let sendChannel = rabbit_topology.channels.send;
-  let messageIdsExchange = rabbit_topology.exchanges.topic.messageIds;
+    lastMsg: lastMsg,
+  };
+  const sentAt = new Date().getTime();
+  const sendChannel = userTopology.channels.send;
+  const messageIdsExchange = userTopology.exchanges.topic.messageIds;
   rabbit.publish(sendChannel, messageIdsExchange, 'user.' + userId, message, {
-    contentType: 'application/json', 
+    contentType: 'application/json',
     type: 'thread ids',
     appId: 'zi-threads',
     timestamp: sentAt,
     encoding: 'string Buffer',
     persistent: true,
   });
-
 }
 
-exports.publishMessageIds = function publishThreadIds(userId, accessToken, messages, pageNumber, lastMsg) {
-  let messageIds = messages.map(message => message.id);
+exports.publishMessageIds =
+function publishThreadIds(userId, accessToken, messages, pageNumber, lastMsg) {
+  const messageIds = messages.map((message) => message.id);
   createQueue(userId, (err, ok) => {
     if (err) return logger.error(err);
     publishToRabbitMQ(userId, accessToken, messageIds, pageNumber, lastMsg);
@@ -59,6 +86,6 @@ exports.publishMessageIds = function publishThreadIds(userId, accessToken, messa
 };
 
 exports.ackUserMsg = function ackUserMsg(userMsg) {
-  let listenChannel = rabbit_topology.channels.listen;
+  const listenChannel = userTopology.channels.listen;
   rabbit.ack(listenChannel, userMsg);
-}
+};
