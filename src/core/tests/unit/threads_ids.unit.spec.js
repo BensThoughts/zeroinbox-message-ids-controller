@@ -18,7 +18,7 @@ const {
     GMAIL_THREADS_ENDPOINT
 } = require('../../../config/init.config');
 
-const access_token = 'access_token';
+const accessToken = 'accessToken';
 const pageToken = 'pageToken';
 let threads_ids;
 
@@ -109,7 +109,7 @@ describe('thread_ids.controller: ', () => {
             let threads_ids = rewire('../../threads_ids.controller');
             userObj = {
                 userId: 'userId',
-                access_token: 'access_token'
+                accessToken: 'accessToken'
             }
             storedResults = [];
             nextPageToken;
@@ -137,21 +137,21 @@ describe('thread_ids.controller: ', () => {
         });
         it('should call publishThreadIds with the correct args the first time', () => {
             expect(explainPublish.calls[0].args[0]).to.eql(userObj.userId);
-            expect(explainPublish.calls[0].args[1]).to.eql(userObj.access_token);
+            expect(explainPublish.calls[0].args[1]).to.eql(userObj.accessToken);
             expect(explainPublish.calls[0].args[2]).to.eql(threadIds1);
             expect(explainPublish.calls[0].args[3]).to.eql(0);
             expect(explainPublish.calls[0].args[4]).to.eql(false);
         });
         it('should call publishThreadIds with the correct args the second time', () => {
             expect(explainPublish.calls[1].args[0]).to.eql(userObj.userId);
-            expect(explainPublish.calls[1].args[1]).to.eql(userObj.access_token);
+            expect(explainPublish.calls[1].args[1]).to.eql(userObj.accessToken);
             expect(explainPublish.calls[1].args[2]).to.eql(threadIds2);
             expect(explainPublish.calls[1].args[3]).to.eql(1);
             expect(explainPublish.calls[1].args[4]).to.eql(false);
         });
         it('should call publishThreadIds with the correct args the third time', () => {
             expect(explainPublish.calls[2].args[0]).to.eql(userObj.userId);
-            expect(explainPublish.calls[2].args[1]).to.eql(userObj.access_token);
+            expect(explainPublish.calls[2].args[1]).to.eql(userObj.accessToken);
             expect(explainPublish.calls[2].args[2]).to.eql(threadIds3);
             expect(explainPublish.calls[2].args[3]).to.eql(2);
             expect(explainPublish.calls[2].args[4]).to.eql(true);
@@ -208,7 +208,7 @@ describe('thread_ids.controller: ', () => {
             let threads_ids = rewire('../../threads_ids.controller');
             userObj = {
                 userId: 'userId',
-                access_token: 'access_token'
+                accessToken: 'accessToken'
             }
             storedResults = [];
             nextPageToken;
@@ -232,7 +232,7 @@ describe('thread_ids.controller: ', () => {
         });
         it('should call publishThreadIds with the correct args', () => {
             expect(explainPublish.calls[0].args[0]).to.eql(userObj.userId);
-            expect(explainPublish.calls[0].args[1]).to.eql(userObj.access_token);
+            expect(explainPublish.calls[0].args[1]).to.eql(userObj.accessToken);
             expect(explainPublish.calls[0].args[2]).to.eql(threadIds3);
             expect(explainPublish.calls[0].args[3]).to.eql(0);
             expect(explainPublish.calls[0].args[4]).to.eql(true);
@@ -303,7 +303,7 @@ describe('thread_ids.controller: ', () => {
             let threads_ids = rewire('../../threads_ids.controller');
             userObj = {
                 userId: 'userId',
-                access_token: 'access_token'
+                accessToken: 'accessToken'
             }
             storedResults = threadIds2.concat(threadIds3);
             nextPageToken;
@@ -327,21 +327,21 @@ describe('thread_ids.controller: ', () => {
         });
         it('should call publishThreadIds with the correct args the first time', () => {
             expect(explainPublish.calls[0].args[0]).to.eql(userObj.userId);
-            expect(explainPublish.calls[0].args[1]).to.eql(userObj.access_token);
+            expect(explainPublish.calls[0].args[1]).to.eql(userObj.accessToken);
             expect(explainPublish.calls[0].args[2]).to.eql(threadIds1);
             expect(explainPublish.calls[0].args[3]).to.eql(0);
             expect(explainPublish.calls[0].args[4]).to.eql(false);
         });
         it('should call publishThreadIds with the correct args the second time', () => {
             expect(explainPublish.calls[1].args[0]).to.eql(userObj.userId);
-            expect(explainPublish.calls[1].args[1]).to.eql(userObj.access_token);
+            expect(explainPublish.calls[1].args[1]).to.eql(userObj.accessToken);
             expect(explainPublish.calls[1].args[2]).to.eql([]);
             expect(explainPublish.calls[1].args[3]).to.eql(1);
             expect(explainPublish.calls[1].args[4]).to.eql(false);
         });
         it('should call publishThreadIds with the correct args the third time', () => {
             expect(explainPublish.calls[2].args[0]).to.eql(userObj.userId);
-            expect(explainPublish.calls[2].args[1]).to.eql(userObj.access_token);
+            expect(explainPublish.calls[2].args[1]).to.eql(userObj.accessToken);
             expect(explainPublish.calls[2].args[2]).to.eql([]);
             expect(explainPublish.calls[2].args[3]).to.eql(2);
             expect(explainPublish.calls[2].args[4]).to.eql(true);
@@ -445,7 +445,7 @@ describe('thread_ids.controller: ', () => {
             let threads_ids = rewire('../../threads_ids.controller');
             userObj = {
                 userId: 'userId',
-                access_token: 'access_token'
+                accessToken: 'accessToken'
             }
             storedResults = [];
             nextPageToken;

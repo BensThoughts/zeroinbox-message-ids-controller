@@ -28,10 +28,10 @@ function createQueue(userId, callback) {
 }
 
 
-function publishToRabbitMQ(userId, access_token, messageIds, pageNumber, lastMsg) {
+function publishToRabbitMQ(userId, accessToken, messageIds, pageNumber, lastMsg) {
   let message = {
     userId: userId,
-    access_token: access_token,
+    accessToken: accessToken,
     messageIds: messageIds,
     pageNumber: pageNumber,
     lastMsg: lastMsg
@@ -50,11 +50,11 @@ function publishToRabbitMQ(userId, access_token, messageIds, pageNumber, lastMsg
 
 }
 
-exports.publishMessageIds = function publishThreadIds(userId, access_token, messages, pageNumber, lastMsg) {
+exports.publishMessageIds = function publishThreadIds(userId, accessToken, messages, pageNumber, lastMsg) {
   let messageIds = messages.map(message => message.id);
   createQueue(userId, (err, ok) => {
     if (err) return logger.error(err);
-    publishToRabbitMQ(userId, access_token, messageIds, pageNumber, lastMsg);
+    publishToRabbitMQ(userId, accessToken, messageIds, pageNumber, lastMsg);
   });
 };
 

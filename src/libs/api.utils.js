@@ -29,9 +29,9 @@ function retryPromise(promiseCreator, retries, delay, delayMultiplier) {
     });
 }
 
-function httpGetPageOfMessageIdsPromise(access_token, pageToken) {
+function httpGetPageOfMessageIdsPromise(accessToken, pageToken) {
   return new Promise((resolve, reject) => {
-    let options = createOptions(access_token, pageToken);
+    let options = createOptions(accessToken, pageToken);
 
     request.get(options, (error, response, body) => {
 
@@ -52,12 +52,12 @@ function httpGetPageOfMessageIdsPromise(access_token, pageToken) {
 
 }
 
-function createOptions(access_token, pageToken) {
+function createOptions(accessToken, pageToken) {
   if (pageToken) {
     return {
         url: GMAIL_MESSAGES_ENDPOINT,
         headers: {
-          'Authorization': 'Bearer ' + access_token
+          'Authorization': 'Bearer ' + accessToken
         },
         qs: {
           maxResults: MAX_RESULTS,
@@ -69,7 +69,7 @@ function createOptions(access_token, pageToken) {
     return {
         url: GMAIL_MESSAGES_ENDPOINT,
         headers: {
-          'Authorization': 'Bearer ' + access_token
+          'Authorization': 'Bearer ' + accessToken
         },
         qs: {
           maxResults: MAX_RESULTS,
@@ -79,11 +79,11 @@ function createOptions(access_token, pageToken) {
   }
 }
 
-exports.getPageOfMessageIds = function(access_token, pageToken) {
+exports.getPageOfMessageIds = function(accessToken, pageToken) {
   let retries = GAPI_MAX_RETRIES;
   let delay = GAPI_INIT_RETRY_DELAY;
   let delayMultiplier = GAPI_DELAY_MULTIPLIER;
-  let promiseCreator = () => httpGetPageOfMessageIdsPromise(access_token, pageToken);
+  let promiseCreator = () => httpGetPageOfMessageIdsPromise(accessToken, pageToken);
   // logger.trace(options);
   return retryPromise(promiseCreator, retries, delay, delayMultiplier);
 }

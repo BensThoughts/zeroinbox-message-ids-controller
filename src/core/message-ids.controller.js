@@ -27,7 +27,7 @@ const rabbit = require('zero-rabbit');
 
 getMessageIds = function (userMsg) {
   let userId = userMsg.content.userId;
-  let access_token = userMsg.content.access_token;
+  let accessToken = userMsg.content.accessToken;
 
   findAllMessageIds(userId, (err, messageIdsFromMongo) => {
     if (err) return logger.error('Error in findMessageIds(): ' + err);
@@ -37,7 +37,7 @@ getMessageIds = function (userMsg) {
 
     let userObj = {
       userId: userId,
-      access_token: access_token,
+      accessToken: accessToken,
     }
     let nextPageToken;
     let results = {
@@ -67,7 +67,7 @@ getMessageIds = function (userMsg) {
       logger.error(userId + ' - Error in getMessageIdPages(): ' + JSON.stringify(err));
       // not sure about this
       let lastMsg = true;
-      publishMessageIds(userId, access_token, [], 0, lastMsg);
+      publishMessageIds(userId, accessToken, [], 0, lastMsg);
       ackUserMsg(userMsg);
     });
 
@@ -76,10 +76,10 @@ getMessageIds = function (userMsg) {
 
 async function getMessageIdPages(userObj, messageIdsFromMongo, nextPageToken, pageNumber, results) {
 
-  let access_token = userObj.access_token;
+  let accessToken = userObj.accessToken;
   let userId = userObj.userId;
 
-  let response = await getPageOfMessageIds(access_token, nextPageToken).catch((httpErr) => {
+  let response = await getPageOfMessageIds(accessToken, nextPageToken).catch((httpErr) => {
     // logger.error(err);
     throw new Error(httpErr);
   });
@@ -110,13 +110,13 @@ async function getMessageIdPages(userObj, messageIdsFromMongo, nextPageToken, pa
     
   if (nextPageToken) {
     let lastMsg = false;
-    publishMessageIds(userId, access_token, newMessages, pageNumber, lastMsg);
+    publishMessageIds(userId, accessToken, newMessages, pageNumber, lastMsg);
     uploadMessageIds(userId, newMessages);
     pageNumber++;
     return getMessageIdPages(userObj, messageIdsFromMongo, nextPageToken, pageNumber, results);
   } else {
     let lastMsg = true;
-    publishMessageIds(userId, access_token, newMessages, pageNumber, lastMsg);
+    publishMessageIds(userId, accessToken, newMessages, pageNumber, lastMsg);
     uploadMessageIds(userId, newMessages);
     return results;
   } 
