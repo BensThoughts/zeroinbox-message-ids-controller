@@ -60,7 +60,7 @@ getMessageIds = function(userMsg) {
       logger.trace(userId + ' - Total msgIds from Gmail: ' + numMsgsFromGoogle);
 
       const resultsPerPage = MAX_RESULTS;
-      const messageIdTotal = newMsgIdCount;
+      const messageIdTotal = results.newMessageIdCount;
       uploadLoadingStatus(
           userId,
           messageIdTotal,
