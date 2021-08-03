@@ -40,7 +40,7 @@ function httpGetPageOfMessageIdsPromise(access_token, pageToken) {
         resolve(body)
       } else {
         let httpError = {
-          urlError: 'GET - Error contacting ' + url + ': ' + error,
+          urlError: 'GET - Error contacting ' + options.url + ': ' + error,
           errorBody: JSON.stringify(error)
         }
         reject(httpError);
