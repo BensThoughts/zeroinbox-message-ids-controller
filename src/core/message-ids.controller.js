@@ -29,6 +29,8 @@ getMessageIds = function(userMsg) {
 
   findAllMessageIds(userId, (err, messageIdsFromMongo) => {
     if (err) return logger.error('Error in findMessageIds(): ' + err);
+
+    // As long as userId exists this comes back [], not null
     if (messageIdsFromMongo === null) {
       return logger.error('Error in findMessageIds(): messageIds === null');
     };
@@ -43,8 +45,9 @@ getMessageIds = function(userMsg) {
     let nextPageToken;
     const results = {
       newMessageIdCount: 0,
-      messagesFromServer: [], // [{ id: String, messageId: String }]
+      messagesFromServer: [], // [{id: String, messageId: String}]
     };
+
     const pageNumber = 0;
 
     getMessageIdPages(
