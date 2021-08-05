@@ -10,12 +10,10 @@ log4js.configure({
       },
     },
     stderr: {
-      stdout: {
-        type: 'stderr',
-        layout: {
-          type: 'pattern',
-          pattern: '%[[%d] [%p] [ZeroInbox-Api-Gateway] -%] %X{userId}%m',
-        },
+      type: 'stderr',
+      layout: {
+        type: 'pattern',
+        pattern: '%[[%d] [%p] [ZeroInbox-Api-Gateway] -%] %X{userId}%m',
       },
     },
     debug: {
