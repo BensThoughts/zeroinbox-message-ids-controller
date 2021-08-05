@@ -86,7 +86,9 @@ getMessageIds = function(userMsg) {
       ackUserMsg(userMsg);
     }).catch((err) => {
       logger.error('Error in getMessageIdPages: ' + JSON.stringify(err));
-      // not sure about this being the best way
+      // TODO: not sure about this being the best way
+      // TODO: it can fire off 2 of the same message? causing
+      // TODO: failure in batch-messages
       const lastMsg = true;
       publishMessageIds(userId, accessToken, [], 0, lastMsg);
       ackUserMsg(userMsg);
@@ -122,6 +124,14 @@ async function getMessageIdPages(
   if (response === undefined) {
     throw new Error('response === undefined from getPageOfMessageIds');
   }
+
+  // newly added to ensure an error is thrown and cycle ends properly
+  // when response is 403 etc.
+  // TODO: Needed?
+  // if (response.messages === undefined) {
+  //   logger.trace(response);
+  //   throw new Error('');
+  // }
 
   // response = {
   //    messages: [{ id: String, threadId: String }],
