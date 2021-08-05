@@ -50,6 +50,8 @@ mongoose.connect(
           const listenChannel = userTopology.channels.listen;
           const userIdsQueue = userTopology.queues.user_id;
           rabbit.consume(listenChannel, userIdsQueue, (userMsg) => {
+            const userId = userMsg.content.userId;
+            logger.addContext('userId', userId);
             getMessageIds(userMsg);
           }, {noAck: false});
         });

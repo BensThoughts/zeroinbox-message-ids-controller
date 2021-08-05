@@ -36,7 +36,7 @@ getMessageIds = function(userMsg) {
     };
 
     const numMsgsInMongo = messageIdsFromMongo.length;
-    logger.trace(userId + ' - Num of messageIds in mongo: ' + numMsgsInMongo);
+    logger.trace('Num of messageIds in mongo: ' + numMsgsInMongo);
 
     const userObj = {
       userId: userId,
@@ -58,9 +58,9 @@ getMessageIds = function(userMsg) {
         results,
     ).then((results) => {
       const numMsgIdCount = results.newMessageIdCount;
-      logger.trace(userId + ' - Total new msgIds: ' + numMsgIdCount);
+      logger.trace('Total new msgIds: ' + numMsgIdCount);
       const numMsgsFromGoogle = results.messagesFromServer.length;
-      logger.trace(userId + ' - Total msgIds from Gmail: ' + numMsgsFromGoogle);
+      logger.trace('Total msgIds from Gmail: ' + numMsgsFromGoogle);
 
       const resultsPerPage = MAX_RESULTS;
       const messageIdTotal = results.newMessageIdCount;
@@ -83,15 +83,14 @@ getMessageIds = function(userMsg) {
             messageIdsFromMongo,
         );
       }
-
+      logger.addContext('userId', '');
       ackUserMsg(userMsg);
     }).catch((err) => {
-      logger.error(
-          userId + ' - Error in getMessageIdPages: ' + JSON.stringify(err),
-      );
+      logger.error('Error in getMessageIdPages: ' + JSON.stringify(err));
       // not sure about this being the best way
       const lastMsg = true;
       publishMessageIds(userId, accessToken, [], 0, lastMsg);
+      logger.addContext('userId', '');
       ackUserMsg(userMsg);
     });
   });
@@ -142,9 +141,9 @@ async function getMessageIdPages(
 
   results.newMessageIdCount = results.newMessageIdCount + newMessages.length;
 
-  logger.trace(userId + ' - Page Number: ' + pageNumber);
-  logger.trace(userId + ' - Message Ids from GMail: ' + messages.length);
-  logger.trace(userId + ' - New Message Ids: ' + newMessages.length);
+  logger.trace('Page Number: ' + pageNumber);
+  logger.trace('Message Ids from GMail: ' + messages.length);
+  logger.trace('New Message Ids: ' + newMessages.length);
 
   if (nextPageToken) {
     const lastMsg = false;
@@ -196,12 +195,10 @@ function removeMessageIdsNotOnGoogleServer(
   });
 
   const numMsgIdsToRemove = messageIdsToRemove.length;
-  logger.trace(
-      userId + ' - messageIds to remove from mongo: ' + numMsgIdsToRemove,
-  );
+  logger.trace('messageIds to remove from mongo: ' + numMsgIdsToRemove);
 
   deleteMessageIds(userId, messageIdsToRemove, (mongoErr, res) => {
-    if (mongoErr) return logger.error(userId + ' - ' + mongoErr);
+    if (mongoErr) return logger.error(mongoErr);
   });
 
   findSendersWithMessageIdsToRemove(
@@ -209,9 +206,7 @@ function removeMessageIdsNotOnGoogleServer(
       messageIdsToRemove,
       (mongoErr, senders) => {
         if (mongoErr) return logger.error(userId + ' - ' + mongoErr);
-        logger.trace(
-            userId + ' - Senders with message Ids to remove: ' + senders.length,
-        );
+        logger.trace('Senders with message Ids to remove: ' + senders.length);
         senders.forEach((sender) => {
           const senderId = sender.senderId;
 
@@ -225,23 +220,20 @@ function removeMessageIdsNotOnGoogleServer(
           });
 
           if (removeSender.length == 0) {
-            logger.trace(userId + ' - deleting senderId: ' + senderId);
+            logger.trace('deleting senderId: ' + senderId);
             deleteSender(userId, senderId, (mongoErr, deletionResponse) => {
-              if (mongoErr) return logger.error(userId + ' - ' + mongoErr);
-              logger.trace(userId + ' - ' + JSON.stringify(deletionResponse));
+              if (mongoErr) return logger.error(mongoErr);
+              logger.trace(JSON.stringify(deletionResponse));
             });
           } else {
-            const logString = userId + ' - Removing messageIds from sender: ';
-            logger.trace(logString + senderId);
+            logger.trace('Removing messageIds from sender: ' + senderId);
             removeMessageIdsFromSender(
                 userId,
                 senderId,
                 messageIdsToRemove,
                 (mongoErr, updateResponse) => {
-                  if (mongoErr) return logger.error(userId + ' - ' + mongoErr);
-                  logger.trace(
-                      userId +
-                      ' - messageIds removed from sender: ' +
+                  if (mongoErr) return logger.error(mongoErr);
+                  logger.trace('messageIds removed from sender: ' +
                       messageIdsToRemove.length,
                   );
                 },
