@@ -83,14 +83,12 @@ getMessageIds = function(userMsg) {
             messageIdsFromMongo,
         );
       }
-      logger.addContext('userId', '');
       ackUserMsg(userMsg);
     }).catch((err) => {
       logger.error('Error in getMessageIdPages: ' + JSON.stringify(err));
       // not sure about this being the best way
       const lastMsg = true;
       publishMessageIds(userId, accessToken, [], 0, lastMsg);
-      logger.addContext('userId', '');
       ackUserMsg(userMsg);
     });
   });

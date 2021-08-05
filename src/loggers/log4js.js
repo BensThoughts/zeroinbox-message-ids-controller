@@ -6,14 +6,14 @@ log4js.configure({
       type: 'stdout',
       layout: {
         type: 'pattern',
-        pattern: '%[[%d] [%p] [ZeroInbox-Api-Gateway] -%] %X{userId}%m',
+        pattern: '%[[%d] [%p] [ZeroInbox-Message-Ids] -%] %X{userId}%m',
       },
     },
     stderr: {
       type: 'stderr',
       layout: {
         type: 'pattern',
-        pattern: '%[[%d] [%p] [ZeroInbox-Api-Gateway] -%] %X{userId}%m',
+        pattern: '%[[%d] [%p] [ZeroInbox-Message-Ids] -%] %X{userId}%m',
       },
     },
     debug: {
