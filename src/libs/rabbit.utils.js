@@ -77,7 +77,7 @@ function publishToRabbitMQ(
 }
 
 exports.publishMessageIds =
-function publishThreadIds(userId, accessToken, messages, pageNumber, lastMsg) {
+function publishMessageIds(userId, accessToken, messages, pageNumber, lastMsg) {
   const messageIds = messages.map((message) => message.id);
   createQueue(userId, (err, ok) => {
     if (err) return logger.error(err);
