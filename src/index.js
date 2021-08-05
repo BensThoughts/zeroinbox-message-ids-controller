@@ -50,9 +50,6 @@ mongoose.connect(
           const listenChannel = userTopology.channels.listen;
           const userIdsQueue = userTopology.queues.user_id;
           rabbit.consume(listenChannel, userIdsQueue, (userMsg) => {
-            const message = JSON.stringify(userMsg.content);
-            const userId = userMsg.content.userId;
-            logger.trace(userId + ' - userMsg.content: ' + message);
             getMessageIds(userMsg);
           }, {noAck: false});
         });
