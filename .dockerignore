@@ -1,2 +1,6 @@
-**/*.spec.js
-**/tests
+fly.toml
+Dockerfile
+.dockerignore
+node_modules
+.git
+.env
