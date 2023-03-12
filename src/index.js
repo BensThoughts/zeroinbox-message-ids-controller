@@ -9,7 +9,7 @@ const {
 const mongoose = require('mongoose');
 const {
   MONGO_URI,
-  MESSAGE_IDS_HEALTH_HOST,
+  // MESSAGE_IDS_HEALTH_HOST,
   MESSAGE_IDS_HEALTH_PORT,
 } = require('./config/init.config');
 
@@ -20,8 +20,8 @@ Object.keys(envVars).forEach((envVar) => {
 });
 
 const express = require('express');
-const KubeHealthCheck = express();
-KubeHealthCheck.get('/healthz', (req, res, next) => {
+const kubeHealthCheck = express();
+kubeHealthCheck.get('/healthcheck', (req, res, next) => {
   res.status(200).send();
 });
 
@@ -42,16 +42,21 @@ mongoose.connect(
           // If getting EADDR Already in use, probably rabbit.connect has
           // tried to reconnect/reload
           const server =
-            KubeHealthCheck
-                .listen(MESSAGE_IDS_HEALTH_PORT, MESSAGE_IDS_HEALTH_HOST);
+            kubeHealthCheck
+                .listen(MESSAGE_IDS_HEALTH_PORT, () => {
+                  logger.info('Express server started for health checks');
+                  // logger.info(`Running health check on http://${MESSAGE_IDS_HEALTH_HOST}:${MESSAGE_IDS_HEALTH_PORT}`);
+                });
+          const address = server.address();
+          logger.info(address);
           processHandler(server);
-          logger.info(`Running health check on http://${MESSAGE_IDS_HEALTH_HOST}:${MESSAGE_IDS_HEALTH_PORT}`);
 
           const listenChannel = userTopology.channels.listen;
           const userIdsQueue = userTopology.queues.user_id;
           rabbit.consume(listenChannel, userIdsQueue, (userMsg) => {
             const userId = userMsg.content.userId;
             logger.addContext('userId', userId + ' - ');
+            logger.info(`incoming message ${JSON.stringify(userMsg.content)}`);
             getMessageIds(userMsg);
           }, {noAck: false});
         });
