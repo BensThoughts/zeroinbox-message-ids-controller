@@ -50,3 +50,5 @@ logs/info.log
 
 deploy.env
 docker.sh
+
+.env
